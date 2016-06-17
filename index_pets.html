@@ -1,0 +1,125 @@
+<!--
+        	Todo: Add a button to each pet that allows you to feed it and another button that allows you to play with it. Make sure you are only feeding / playing with that one pet.
+        	Todo: Add a button to feed all of your pets
+        	Todo: Implement functionality that removes any pets whose food goes below 0 (they run away!)
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="pets"></div>
+
+    <div>
+        <input type="text" id="newPetName">
+        <button id="newPet">Create Pet</button>
+
+    </div>
+    <button id="feedAll">Feed All</button>
+
+    <script>
+        function Pet(name) {
+            this.name = name;
+            this.food = 10;
+
+            this.feed = function () {
+                this.food += 1;
+            }
+
+            this.play = function () {
+                this.food -= 1;
+            }
+        }
+
+        function Model() {
+            this.pets = [];
+        }
+
+        function Controller(model) {
+            this.feedPets = function () {
+                for (var i = 0; i < model.pets.length; i++) {
+                    model.pets[i].feed();
+                }
+
+            }
+
+            this.getAllPets = function () {
+                return model.pets;
+            }
+
+            this.createPet = function (name) {
+                model.pets.push(new Pet(name));
+            }
+
+        }
+
+        function View(controller) {
+            this.showAllPets = function () {
+                var world = document.getElementById("pets");
+                world.innerHTML = "";
+                for (var i = 0; i < controller.getAllPets().length; i++) {
+                    this.showPet(i);
+                }
+
+            }
+
+            this.showPet = function (index) {
+                var world = document.getElementById("pets");
+                var pet = controller.getAllPets()[index];
+                var p = document.createElement("div");
+                var feed = document.createElement("button");
+                var feedText = document.createTextNode("Feed");
+                feed.appendChild(feedText);
+                var play = document.createElement("button");
+                var playText = document.createTextNode("Play");
+                play.appendChild(playText);
+                var feedAll = document.getElementById("feedAll");
+
+                p.className = "pet";
+                p.innerHTML = pet.name + " -- " + pet.food;
+                world.appendChild(p);
+                p.appendChild(feed);
+                p.appendChild(play);
+                var view = this;
+                feedAll.onclick = function () {
+                    controller.feedPets();
+                    view.showAllPets();
+                }
+                feed.onclick = function () {
+                    pet.feed();
+                    view.showAllPets();
+                }
+                play.onclick = function () {
+                    pet.play();
+                    view.showAllPets();
+                }
+            }
+
+
+            this.createPet = function () {
+                var petName = document.getElementById("newPetName").value;
+                controller.createPet(petName);
+                this.showAllPets();
+            }
+        }
+
+        var m = new Model();
+        var c = new Controller(m);
+        var v = new View(c);
+
+        document.getElementById("newPet").onclick = function () {
+            v.createPet();
+        }
+
+        v.showAllPets();
+
+
+    </script>
+</body>
+
+</html>
